@@ -1,39 +1,31 @@
 clear
 clc
 
-%% 平台参数
+run('stewart_parameters.m')
 
-Rb = 150;      % 下平台半径 mm
-Rp = 100;      % 上平台半径 mm
+%% Initial pose
 
-%% 暂时建立6个均匀分布连接点
-thetaB = deg2rad([0 60 120 180 240 300]);
-thetaP = deg2rad([30 90 150 210 270 330]);
+pos0 = [0 0 h0];
+angle0 = deg2rad([0 0 0]);
 
-B = zeros(3,6);
-P = zeros(3,6);
+L0 = stewartIK(pos0,angle0,B,P);
 
-for i = 1:6
+%% Target pose: Z + 10 mm
 
-    B(:,i) = [Rb*cos(thetaB(i));
-              Rb*sin(thetaB(i));
-              0];
+pos1 = [0 0 h0+10];
+angle1 = deg2rad([0 0 0]);
 
-    P(:,i) = [Rp*cos(thetaP(i));
-              Rp*sin(thetaP(i));
-              0];
+L1 = stewartIK(pos1,angle1,B,P);
 
-end
+%% Required prismatic displacement
 
-%% 平台目标位姿
+q = L1-L0;
 
-pos = [0 0 260];          % mm
+disp('Initial lengths / mm:')
+disp(L0)
 
-angle = deg2rad([0 0 0]); % roll pitch yaw
+disp('Target lengths / mm:')
+disp(L1)
 
-%% 逆运动学
-
-L = stewartIK(pos,angle,B,P);
-
-disp('六根杆长度：')
-disp(L)
+disp('Prismatic displacement / mm:')
+disp(q)
